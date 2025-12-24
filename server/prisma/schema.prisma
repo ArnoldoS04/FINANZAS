@@ -1,0 +1,98 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model roles {
+  idroles     Int         @id @default(autoincrement())
+  rol         String?     @db.VarChar(45)
+  descripcion String?     @db.VarChar(100)
+  status      String?     @default("A") @db.Char(1)
+  usuarios    usuarios[]
+}
+
+model usuarios {
+  idusuarios Int       @id @default(autoincrement())
+  rol        Int
+  username   String?   @db.VarChar(45)
+  password   String?   @db.LongText
+  createdate DateTime? @default(now()) @db.DateTime(0)
+  status     String?   @default("A") @db.Char(1)
+  roles      roles     @relation(fields: [rol], references: [idroles], onDelete: NoAction, onUpdate: NoAction, map: "fk_rol")
+
+  ingresos   INGRESOS[]
+  egresos    EGRESOS[]
+
+  @@index([rol], map: "fk_rol_idx")
+}
+
+model CATEGOR {
+  id_cat      Int          @id @default(autoincrement())
+  name        String        @db.VarChar(100)
+  description String?       @db.VarChar(255)
+  create_date DateTime?     @default(now()) @db.DateTime(0)
+  status      String?       @default("A") @db.Char(1)
+
+  subcategor  SUBCATEGOR[]
+}
+
+model SUBCATEGOR {
+  id_subc     Int          @id @default(autoincrement())
+  id_cat      Int
+  name        String        @db.VarChar(100)
+  description String?       @db.VarChar(255)
+  create_date DateTime?     @default(now()) @db.DateTime(0)
+  status      String?       @default("A") @db.Char(1)
+
+  categoria   CATEGOR       @relation(fields: [id_cat], references: [id_cat])
+  ingresos    INGRESOS[]
+  egresos     EGRESOS[]
+
+  @@index([id_cat])
+}
+
+model INGRESOS {
+  id_in       Int          @id @default(autoincrement())
+  id_subc     Int
+  id_usr      Int
+  description String?       @db.VarChar(255)
+  date_in     DateTime      @db.DateTime(0)
+  create_date DateTime?     @default(now()) @db.DateTime(0)
+  amount      Decimal        @db.Decimal(10, 2)
+  auto        Boolean        @default(false)
+  status      String?        @default("A") @db.Char(1)
+
+  subcategoria SUBCATEGOR   @relation(fields: [id_subc], references: [id_subc])
+  usuario      usuarios      @relation(fields: [id_usr], references: [idusuarios])
+
+  @@index([id_subc])
+  @@index([id_usr])
+}
+
+model EGRESOS {
+  id_out      Int          @id @default(autoincrement())
+  id_subc     Int
+  id_usr      Int
+  description String?       @db.VarChar(255)
+  date_out    DateTime      @db.DateTime(0)
+  create_date DateTime?     @default(now()) @db.DateTime(0)
+  amount      Decimal        @db.Decimal(10, 2)
+  auto        Boolean        @default(false)
+  status      String?        @default("A") @db.Char(1)
+
+  subcategoria SUBCATEGOR   @relation(fields: [id_subc], references: [id_subc])
+  usuario      usuarios      @relation(fields: [id_usr], references: [idusuarios])
+
+  @@index([id_subc])
+  @@index([id_usr])
+}
