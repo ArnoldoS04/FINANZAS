@@ -48,11 +48,28 @@ export const saveIngreso = async (req, res) => {
 export const getIngresos = async (req, res) => {
   try {
     const ingresos = await prisma.INGRESOS.findMany({
-      orderBy: { date_in: "desc" },
-      where: { status: "A" },
+      where: {
+        status: "A",
+        OR: [
+          {
+            date_in: {
+              gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+              lt: new Date(
+                new Date().getFullYear(),
+                new Date().getMonth() + 1,
+                1
+              ),
+            },
+          },
+          { auto: true },
+        ],
+      },
+      orderBy: [{ auto: "desc" }, { date_in: "desc" }],
+      distinct: ["description"],
     });
     res.status(200).json(ingresos);
   } catch (error) {
+    console.error("Error al obtener ingresos", error);
     res.status(500).json({ error: "Error al obtener ingresos" });
   }
 };
@@ -73,6 +90,33 @@ export const updateIngreso = async (req, res) => {
       },
     });
     res.status(200).json({ message: "Ingreso actualizado exitosamente" });
+  } catch (error) {
+    console.log("Error al actualizar ingreso", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+};
+
+// Agrega ingresos recurrentes
+export const addAutoIngresos = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const ingreso = await prisma.INGRESOS.findUnique({
+      where: { id_in: parseInt(id) },
+    });
+
+    await prisma.INGRESOS.create({
+      data: {
+        id_subc: ingreso.id_subc,
+        id_usr: ingreso.id_usr,
+        description: ingreso.description,
+        date_in: new Date(),
+        amount: ingreso.amount,
+        auto: ingreso.auto,
+      },
+    });
+
+    res.status(200).json({ message: "Pago registrado exitosamente" });
   } catch (error) {
     console.log("Error al actualizar ingreso", error);
     res.status(500).json({ error: "Error interno del servidor" });

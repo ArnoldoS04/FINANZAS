@@ -28,13 +28,27 @@ export const saveEgreso = async (req, res) => {
 // Obtiene todos los egresos
 export const getEgresos = async (req, res) => {
   try {
+    const now = new Date();
     const egresos = await prisma.EGRESOS.findMany({
-      orderBy: { date_out: "desc" },
-      where: { status: "A" },
+      where: {
+        status: "A",
+        OR: [
+          {
+            date_out: {
+              gte: new Date(now.getFullYear(), now.getMonth(), 1),
+              lt: new Date(now.getFullYear(), now.getMonth() + 1, 1),
+            },
+          },
+          { auto: true },
+        ],
+      },
+      orderBy: [{ auto: "desc" }, { date_out: "desc" }],
+      distinct: ["description"],
     });
+
     res.status(200).json(egresos);
   } catch (error) {
-    console.log("Error al obtener egresos", error);
+    console.error("Error al obtener egresos", error);
     res.status(500).json({ error: "Error al obtener egresos" });
   }
 };
@@ -57,6 +71,33 @@ export const updateEgreso = async (req, res) => {
     });
 
     res.status(200).json({ message: "Egreso actualizado exitosamente" });
+  } catch (error) {
+    console.log("Error al actualizar egreso", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+};
+
+// Agrega egresos recurrentes
+export const addAutoEgresos = async (req, res) => {
+  const { id } = req.params;
+  console.log("ID recibido:", id);
+  try {
+    const egreso = await prisma.EGRESOS.findUnique({
+      where: { id_out: parseInt(id) },
+    });
+
+    await prisma.EGRESOS.create({
+      data: {
+        id_subc: egreso.id_subc,
+        id_usr: egreso.id_usr,
+        description: egreso.description,
+        date_out: new Date(),
+        amount: egreso.amount,
+        auto: egreso.auto,
+      },
+    });
+
+    res.status(200).json({ message: "Pago registrado exitosamente" });
   } catch (error) {
     console.log("Error al actualizar egreso", error);
     res.status(500).json({ error: "Error interno del servidor" });

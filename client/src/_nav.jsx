@@ -44,6 +44,18 @@ const _nav = [
     to: "/expenses",
     icon: <FontAwesomeIcon icon={faFileLines} className="nav-icon" />,
   },
+  {
+    component: CNavItem,
+    name: "Egresos",
+    to: "/rexpenses",
+    icon: <FontAwesomeIcon icon={faFileLines} className="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: "Ingresos",
+    to: "/rincomes",
+    icon: <FontAwesomeIcon icon={faFileLines} className="nav-icon" />,
+  },
   // {
   //   component: CNavTitle,
   //   name: "WISP",

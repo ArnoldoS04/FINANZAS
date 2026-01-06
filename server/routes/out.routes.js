@@ -4,12 +4,14 @@ import {
   getEgresos,
   saveEgreso,
   updateEgreso,
+  addAutoEgresos,
 } from "../controllers/out.controller.js";
 
 const router = Router();
 
-router.get("/getOut", verifyToken, getEgresos);
+router.get("/getOut", getEgresos);
 router.post("/saveOut", verifyToken, saveEgreso);
 router.put("/updateOut/:id", verifyToken, updateEgreso);
+router.post("/addAutoEgresos/:id", addAutoEgresos);
 
 export default router;

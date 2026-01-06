@@ -7,6 +7,8 @@ import Login from "./views/pages/login/Login";
 import Page404 from "./views/pages/page404/Page404";
 import Ingresos from "./views/pages/Ingresos";
 import Egreso from "./views/pages/Egreso";
+import ReportEgreso from "./views/pages/ReportEgreso";
+import ReportIngreso from "./views/pages/ReportIngreso";
 
 const routes = [
   {
@@ -38,6 +40,24 @@ const routes = [
     element: (
       <PrivateRoute>
         <Egreso />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/rexpenses",
+    name: "REgresos",
+    element: (
+      <PrivateRoute>
+        <ReportEgreso />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/rincomes",
+    name: "RIngresos",
+    element: (
+      <PrivateRoute>
+        <ReportIngreso />
       </PrivateRoute>
     ),
   },
