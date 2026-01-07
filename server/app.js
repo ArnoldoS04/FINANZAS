@@ -17,5 +17,5 @@ app.use(cors(corsOptions));
 
 app.use("/api", routes);
 app.listen(process.env.PORT, () => {
-  console.log(`Server corriendo en http://localhost:${process.env.PORT}`);
+  console.log(`Server corriendo en https://api.infracod.com:${process.env.PORT}`);
 });
