@@ -17,5 +17,5 @@ app.use(cors(corsOptions));
 
 app.use("/api", routes);
 app.listen(process.env.PORT, () => {
-  console.log(`Server corriendo en http://localhost:${process.env.PORT}`);
+  console.log(`Server corriendo en http://0.0.0.0:${process.env.PORT}`);
 });
