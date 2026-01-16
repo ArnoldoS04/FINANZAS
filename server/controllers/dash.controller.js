@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+// Obtiene datos del dashboard
 export const getDashboardData = async (req, res) => {
   try {
     // 🔹 Definir los rangos de fecha una sola vez
@@ -61,12 +62,13 @@ export const getDashboardData = async (req, res) => {
   }
 };
 
+// Obtiene ingresos por mes
 export const getIncomesByMonth = async (req, res) => {
   try {
     const result = await prisma.$queryRaw`
   SELECT MONTH(date_in) AS Mes, SUM(amount) AS total_ingresos
   FROM INGRESOS
-  WHERE YEAR(date_in) = YEAR(CURRENT_DATE())
+  WHERE YEAR(date_in) = YEAR(CURRENT_DATE()) AND status = 'A'
   GROUP BY MONTH(date_in)
   ORDER BY MONTH(date_in) asc
 `;
@@ -83,12 +85,13 @@ export const getIncomesByMonth = async (req, res) => {
   }
 };
 
+// Obtiene egresos por mes
 export const getExpensesByMonth = async (req, res) => {
   try {
     const expenses = await prisma.$queryRaw`
   SELECT MONTH(date_out) AS Mes, SUM(amount) AS total_egresos
   FROM EGRESOS
-  WHERE YEAR(date_out) = YEAR(CURRENT_DATE())
+  WHERE YEAR(date_out) = YEAR(CURRENT_DATE()) and status='A'
   GROUP BY MONTH(date_out)
   ORDER BY MONTH(date_out) asc
 `;
@@ -104,6 +107,7 @@ export const getExpensesByMonth = async (req, res) => {
   }
 };
 
+// Obtiene ingresos por categoría
 export const getIngresosPorCategoria = async (req, res) => {
   try {
     // 1️⃣ Calcular total general de ingresos activos
@@ -170,6 +174,7 @@ export const getIngresosPorCategoria = async (req, res) => {
   }
 };
 
+// Obtiene egresos por categoría
 export const getEgresosPorCategoria = async (req, res) => {
   try {
     // 1️⃣ Calcular total general de ingresos activos

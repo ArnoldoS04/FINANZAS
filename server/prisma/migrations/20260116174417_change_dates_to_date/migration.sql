@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE `EGRESOS` MODIFY `date_out` DATE NOT NULL;
+
+-- AlterTable
+ALTER TABLE `INGRESOS` MODIFY `date_in` DATE NOT NULL;

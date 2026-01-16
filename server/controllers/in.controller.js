@@ -23,6 +23,7 @@ export const categorias = async (req, res) => {
 // Inserta nuevo ingreso
 export const saveIngreso = async (req, res) => {
   const { id_subc, description, date_in, amount, auto } = req.body;
+
   const id_usr = req.user.id; // Obtener ID del usuario desde el token
 
   try {
@@ -47,18 +48,15 @@ export const saveIngreso = async (req, res) => {
 // Obtiene todos los ingresos
 export const getIngresos = async (req, res) => {
   try {
+    const now = new Date();
     const ingresos = await prisma.INGRESOS.findMany({
       where: {
         status: "A",
         OR: [
           {
             date_in: {
-              gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-              lt: new Date(
-                new Date().getFullYear(),
-                new Date().getMonth() + 1,
-                1
-              ),
+              gte: new Date(now.getFullYear(), now.getMonth(), 1),
+              lt: new Date(now.getFullYear(), now.getMonth() + 1, 1),
             },
           },
           { auto: true },
@@ -67,7 +65,14 @@ export const getIngresos = async (req, res) => {
       orderBy: [{ auto: "desc" }, { date_in: "desc" }],
       distinct: ["description"],
     });
-    res.status(200).json(ingresos);
+
+    // 🔑 SERIALIZACIÓN CORRECTA
+    const result = ingresos.map((e) => ({
+      ...e,
+      date_in: e.date_in ? e.date_in.toISOString().split("T")[0] : null,
+    }));
+
+    res.status(200).json(result);
   } catch (error) {
     console.error("Error al obtener ingresos", error);
     res.status(500).json({ error: "Error al obtener ingresos" });

@@ -66,7 +66,7 @@ model INGRESOS {
   id_subc     Int
   id_usr      Int
   description String?       @db.VarChar(255)
-  date_in     DateTime      @db.DateTime(0)
+  date_in     DateTime      @db.Date
   create_date DateTime?     @default(now()) @db.DateTime(0)
   amount      Decimal        @db.Decimal(10, 2)
   auto        Boolean        @default(false)
@@ -84,7 +84,7 @@ model EGRESOS {
   id_subc     Int
   id_usr      Int
   description String?       @db.VarChar(255)
-  date_out    DateTime      @db.DateTime(0)
+  date_out    DateTime      @db.Date
   create_date DateTime?     @default(now()) @db.DateTime(0)
   amount      Decimal        @db.Decimal(10, 2)
   auto        Boolean        @default(false)

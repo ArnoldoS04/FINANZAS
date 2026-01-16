@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 export const saveEgreso = async (req, res) => {
   const { id_subc, description, date_out, amount, auto } = req.body;
   const id_usr = req.user.id; // Obtener ID del usuario desde el token
-
+  console.log(req.body);
   try {
     const egreso = await prisma.EGRESOS.create({
       data: {
@@ -46,7 +46,13 @@ export const getEgresos = async (req, res) => {
       distinct: ["description"],
     });
 
-    res.status(200).json(egresos);
+    // 🔑 SERIALIZACIÓN CORRECTA
+    const result = egresos.map((e) => ({
+      ...e,
+      date_out: e.date_out ? e.date_out.toISOString().split("T")[0] : null,
+    }));
+
+    res.status(200).json(result);
   } catch (error) {
     console.error("Error al obtener egresos", error);
     res.status(500).json({ error: "Error al obtener egresos" });
@@ -80,7 +86,7 @@ export const updateEgreso = async (req, res) => {
 // Agrega egresos recurrentes
 export const addAutoEgresos = async (req, res) => {
   const { id } = req.params;
-  console.log("ID recibido:", id);
+
   try {
     const egreso = await prisma.EGRESOS.findUnique({
       where: { id_out: parseInt(id) },

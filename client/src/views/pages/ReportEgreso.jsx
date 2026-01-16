@@ -47,9 +47,8 @@ const ReportEgreso = () => {
     },
     {
       name: "Fecha Pago",
-      selector: (row) => new Date(row.date_out),
+      selector: (row) => row.date_out,
       sortable: true,
-      format: (row) => new Date(row.date_out).toLocaleDateString("es-GT"),
     },
     {
       name: "Total",
